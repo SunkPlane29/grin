@@ -20,6 +20,7 @@ func (s *service) ChangeUsername(userID string, newUsername string) {
 
 }
 
+//TODO: should we "addSubscriber" or should the user "subscribe"
 func (s *service) AddSubscriber(userID string) {
 
 }
