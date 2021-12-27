@@ -3,9 +3,11 @@ package application
 import (
 	"net/http"
 
-	"github.com/SunkPlane29/grim/pkg/user"
+	"github.com/SunkPlane29/grin/pkg/user"
 	"github.com/gorilla/mux"
 )
+
+const DOMAIN = "sunkplane.us.auth0.com"
 
 const APIPathPrefix = "/api"
 
@@ -13,8 +15,14 @@ var (
 	CreateUserEndpoint = APIPathPrefix + "/users"
 )
 
-type GrinStorage interface {
-	user.Storage
+type GrinStorage struct {
+	UserStorage user.Storage
+}
+
+func NewGrinStorage(userStorage user.Storage) *GrinStorage {
+	return &GrinStorage{
+		UserStorage: userStorage,
+	}
 }
 
 type GrinAPI struct {
@@ -22,8 +30,8 @@ type GrinAPI struct {
 	userService user.Service
 }
 
-func New(s GrinStorage) *GrinAPI {
-	g := &GrinAPI{r: mux.NewRouter(), userService: user.New(s)}
+func New(s *GrinStorage) *GrinAPI {
+	g := &GrinAPI{r: mux.NewRouter(), userService: user.New(s.UserStorage)}
 	g.HandleRoutes()
 
 	return g
@@ -34,5 +42,5 @@ func (g *GrinAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g *GrinAPI) HandleRoutes() {
-	g.r.HandleFunc(CreateUserEndpoint, g.CreateUserHandler).Methods("POST")
+	g.r.HandleFunc(CreateUserEndpoint, Auth0Middleware(DOMAIN, g.CreateUserHandler)).Methods("POST")
 }

@@ -1,15 +1,15 @@
 package user
 
 type service struct {
-	s Storage
+	store Storage
 }
 
 func New(s Storage) Service {
-	return &service{s: s}
+	return &service{store: s}
 }
 
 func (s *service) CreateUser(userID string, user User) (*User, error) {
-	return nil, nil
+	return s.store.CreateUser(userID, user)
 }
 
 func (s *service) UpdateUsername(userID, newUsername string) error {

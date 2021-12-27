@@ -1,4 +1,4 @@
-module github.com/SunkPlane29/grim
+module github.com/SunkPlane29/grin
 
 go 1.17
 

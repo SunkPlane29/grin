@@ -2,29 +2,31 @@ package application
 
 import (
 	"encoding/json"
-	"fmt"
+	"log"
 	"net/http"
 
-	"github.com/SunkPlane29/grim/pkg/user"
+	"github.com/SunkPlane29/grin/pkg/user"
 )
 
 func (g *GrinAPI) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
-	userID := r.Context().Value(UIDK).(string)
+	userID, ok := r.Context().Value(UIDK).(string)
+	if !ok {
+		w.Write([]byte("no access token"))
+		w.WriteHeader(http.StatusUnauthorized)
+		return
+	}
 
 	defer r.Body.Close()
 
 	var userObj user.User
 	if err := json.NewDecoder(r.Body).Decode(&userObj); err != nil {
-		w.Write([]byte("invalid json request body"))
+		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusBadRequest)
 		return
 	}
 
-	if userID != userObj.ID {
-		w.Write([]byte(fmt.Sprintf("IDs not matching: req body: %s, authorization token: %s", userObj.ID, userID)))
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+	userObj.ID = userID
+	log.Printf("CreateUser request: %v\n", userObj)
 
 	createdUser, err := g.userService.CreateUser(userID, userObj)
 	if err != nil {
@@ -33,6 +35,6 @@ func (g *GrinAPI) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(createdUser)
 	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(createdUser)
 }

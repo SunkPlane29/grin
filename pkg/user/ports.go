@@ -1,7 +1,7 @@
 package user
 
 type Storage interface {
-	RegisterUser(user User) (*User, error)
+	CreateUser(userID string, user User) (*User, error)
 	UpdateUsername(id string, newUsername string) error
 	UpdateAlias(id string, newAlias string) error
 	DeleteUser(id string) error

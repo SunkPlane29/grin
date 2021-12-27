@@ -1,3 +1,3 @@
 .PHONY: run
 run:
-	go run ./cmd/solitude
+	go run ./cmd/grin-api
