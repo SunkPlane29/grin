@@ -12,6 +12,15 @@ func (s *service) CreateUser(userID string, user User) (*User, error) {
 	return s.store.CreateUser(userID, user)
 }
 
+func (s *service) CheckUserExists(userID string) bool {
+	user, err := s.store.GetUser(userID)
+	if err != nil || user == nil {
+		return false
+	}
+
+	return true
+}
+
 func (s *service) UpdateUsername(userID, newUsername string) error {
 	return nil
 }

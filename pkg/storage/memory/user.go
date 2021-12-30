@@ -1,6 +1,10 @@
 package memory
 
-import "github.com/SunkPlane29/grin/pkg/user"
+import (
+	"errors"
+
+	"github.com/SunkPlane29/grin/pkg/user"
+)
 
 //TODO: implement user storage for CreateUser
 type UserStorage struct {
@@ -14,6 +18,14 @@ func NewUserStorage() user.Storage {
 func (us *UserStorage) CreateUser(userID string, user user.User) (*user.User, error) {
 	us.users[userID] = &user
 	return &user, nil
+}
+
+func (us *UserStorage) GetUser(userID string) (*user.User, error) {
+	user, ok := us.users[userID]
+	if !ok {
+		return nil, errors.New("no user found matching id")
+	}
+	return user, nil
 }
 
 func (us *UserStorage) UpdateUsername(userID, newUsername string) error {

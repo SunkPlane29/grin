@@ -38,3 +38,19 @@ func (g *GrinAPI) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(createdUser)
 }
+
+func (g *GrinAPI) CheckUserExistsHandler(w http.ResponseWriter, r *http.Request) {
+	id := r.URL.Query().Get("id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("missing id in request url params"))
+	}
+
+	if g.userService.CheckUserExists(id) {
+		w.WriteHeader(http.StatusOK)
+		return
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+}

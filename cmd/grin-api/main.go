@@ -13,7 +13,7 @@ import (
 var PORT = os.Getenv("PORT")
 
 func main() {
-	fmt.Println("Hello, World!")
+	fmt.Printf("Listening on :%s\n", PORT)
 
 	userStorage := memory.NewUserStorage()
 	grinStorage := application.NewGrinStorage(userStorage)

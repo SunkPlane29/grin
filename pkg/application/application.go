@@ -12,7 +12,8 @@ const DOMAIN = "sunkplane.us.auth0.com"
 const APIPathPrefix = "/api"
 
 var (
-	CreateUserEndpoint = APIPathPrefix + "/users"
+	CreateUserEndpoint      = APIPathPrefix + "/users"
+	CheckUserExistsEndpoint = APIPathPrefix + "/user-exists"
 )
 
 type GrinStorage struct {
@@ -43,4 +44,5 @@ func (g *GrinAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func (g *GrinAPI) HandleRoutes() {
 	g.r.HandleFunc(CreateUserEndpoint, Auth0Middleware(DOMAIN, g.CreateUserHandler)).Methods("POST")
+	g.r.HandleFunc(CheckUserExistsEndpoint, g.CheckUserExistsHandler).Methods("GET")
 }
