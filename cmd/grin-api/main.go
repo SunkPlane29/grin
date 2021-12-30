@@ -4,12 +4,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/SunkPlane29/grin/pkg/application"
 	"github.com/SunkPlane29/grin/pkg/storage/memory"
 )
 
-const PORT = "8080"
+var PORT = os.Getenv("PORT")
 
 func main() {
 	fmt.Println("Hello, World!")
