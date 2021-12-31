@@ -19,5 +19,5 @@ func main() {
 	grinStorage := application.NewGrinStorage(userStorage)
 
 	grinAPI := application.New(grinStorage)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), grinAPI))
+	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), application.LoggerMiddleware(application.RecoverMiddleware(grinAPI))))
 }

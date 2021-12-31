@@ -2,7 +2,6 @@ package application
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 
 	"github.com/SunkPlane29/grin/pkg/user"
@@ -26,7 +25,6 @@ func (g *GrinAPI) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userObj.ID = userID
-	log.Printf("CreateUser request: %v\n", userObj)
 
 	createdUser, err := g.userService.CreateUser(userID, userObj)
 	if err != nil {
@@ -47,7 +45,7 @@ func (g *GrinAPI) CheckUserExistsHandler(w http.ResponseWriter, r *http.Request)
 	}
 
 	if g.userService.CheckUserExists(id) {
-		w.WriteHeader(http.StatusOK)
+		w.WriteHeader(http.StatusFound)
 		return
 	} else {
 		w.WriteHeader(http.StatusNotFound)

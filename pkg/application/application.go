@@ -43,6 +43,7 @@ func (g *GrinAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g *GrinAPI) HandleRoutes() {
-	g.r.HandleFunc(CreateUserEndpoint, Auth0Middleware(DOMAIN, g.CreateUserHandler)).Methods("POST")
-	g.r.HandleFunc(CheckUserExistsEndpoint, g.CheckUserExistsHandler).Methods("GET")
+	g.r.HandleFunc(CreateUserEndpoint, CORSMiddleware(g.createUserPreflightHandler)).Methods("OPTIONS")
+	g.r.HandleFunc(CreateUserEndpoint, CORSMiddleware(Auth0Middleware(DOMAIN, g.CreateUserHandler))).Methods("POST")
+	g.r.HandleFunc(CheckUserExistsEndpoint, CORSMiddleware(g.CheckUserExistsHandler)).Methods("GET")
 }
