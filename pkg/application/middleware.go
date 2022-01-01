@@ -191,7 +191,7 @@ func LoggerMiddleware(h http.Handler) http.Handler {
 
 		duration := time.Since(start)
 
-		logger := log.New(os.Stdout, "grin-api | ", log.Lshortfile|log.Ldate|log.Ltime)
+		logger := log.New(os.Stdout, "grin-api | ", log.Ldate|log.Ltime)
 		logger.Printf("[%s] %s, status: %d, size: %d, elapsed: %dms\n",
 			method,
 			uri,

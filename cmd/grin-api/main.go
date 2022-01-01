@@ -13,10 +13,17 @@ import (
 var PORT = os.Getenv("PORT")
 
 func main() {
-	fmt.Printf("Listening on :%s\n", PORT)
+	if PORT == "" {
+		PORT = "8080"
+	}
+	log.Printf("Listening on :%s", PORT)
 
 	userStorage := memory.NewUserStorage()
-	grinStorage := application.NewGrinStorage(userStorage)
+	postStorage := memory.NewPostStorage()
+	grinStorage := application.NewGrinStorage(application.StorageOptions{
+		UserStorage: userStorage,
+		PostStorage: postStorage,
+	})
 
 	grinAPI := application.New(grinStorage)
 	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), application.LoggerMiddleware(application.RecoverMiddleware(grinAPI))))
