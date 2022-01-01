@@ -19,6 +19,8 @@ var (
 
 var (
 	CreatePostEndpoint = APIPathPrefix + "/posts"
+	GetPostsEndpoint   = APIPathPrefix + "/users" + "/{creator-id}" + "/posts"
+	GetPostEndpoint    = APIPathPrefix + "/users" + "/{creator-id}" + "/posts" + "/{post-id}"
 )
 
 type GrinStorage struct {
@@ -66,4 +68,6 @@ func (g *GrinAPI) HandleRoutes() {
 
 	g.r.HandleFunc(CreateUserEndpoint, CORSMiddleware(g.postMethodPreflightHandler)).Methods("OPTIONS")
 	g.r.HandleFunc(CreatePostEndpoint, CORSMiddleware(Auth0Middleware(DOMAIN, g.CreatePostHandler))).Methods("POST")
+	g.r.HandleFunc(GetPostsEndpoint, CORSMiddleware(g.GetPostsHandler)).Methods("GET")
+	g.r.HandleFunc(GetPostEndpoint, CORSMiddleware(g.GetPostHandler)).Methods("GET")
 }

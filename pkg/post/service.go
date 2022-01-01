@@ -20,3 +20,11 @@ func (s *service) CreatePost(creatorID string, post Post) (*Post, error) {
 
 	return s.store.CreatePost(creatorID, post)
 }
+
+func (s *service) GetPosts(creatorID string) (*[]Post, error) {
+	return s.store.GetPosts(creatorID)
+}
+
+func (s *service) GetPost(creatorID, postID string) (*Post, error) {
+	return s.store.GetPost(creatorID, postID)
+}
