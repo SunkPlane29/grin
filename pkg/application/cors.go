@@ -10,3 +10,10 @@ func (g *GrinAPI) postMethodPreflightHandler(w http.ResponseWriter, r *http.Requ
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func (g *GrinAPI) getMethodPreflightHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Headers", "content-type")
+	w.Header().Set("Access-Control-Allow-Methods", "GET")
+
+	w.WriteHeader(http.StatusOK)
+}

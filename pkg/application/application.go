@@ -68,6 +68,8 @@ func (g *GrinAPI) HandleRoutes() {
 
 	g.r.HandleFunc(CreateUserEndpoint, CORSMiddleware(g.postMethodPreflightHandler)).Methods("OPTIONS")
 	g.r.HandleFunc(CreatePostEndpoint, CORSMiddleware(Auth0Middleware(DOMAIN, g.CreatePostHandler))).Methods("POST")
+	g.r.HandleFunc(GetPostsEndpoint, CORSMiddleware(g.getMethodPreflightHandler)).Methods("OPTIONS")
 	g.r.HandleFunc(GetPostsEndpoint, CORSMiddleware(g.GetPostsHandler)).Methods("GET")
+	g.r.HandleFunc(GetPostsEndpoint, CORSMiddleware(g.getMethodPreflightHandler)).Methods("OPTIONS")
 	g.r.HandleFunc(GetPostEndpoint, CORSMiddleware(g.GetPostHandler)).Methods("GET")
 }
