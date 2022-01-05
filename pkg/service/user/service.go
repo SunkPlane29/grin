@@ -1,5 +1,9 @@
 package user
 
+import (
+	"github.com/segmentio/ksuid"
+)
+
 type service struct {
 	store Storage
 }
@@ -8,8 +12,10 @@ func New(s Storage) Service {
 	return &service{store: s}
 }
 
-func (s *service) CreateUser(userID string, user User) (*User, error) {
-	return s.store.CreateUser(userID, user)
+func (s *service) CreateUser(user User) (*User, error) {
+	user.ID = ksuid.New().String()
+
+	return s.store.CreateUser(user)
 }
 
 func (s *service) CheckUserExists(userID string) bool {

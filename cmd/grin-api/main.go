@@ -6,8 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/SunkPlane29/grin/pkg/application"
-	"github.com/SunkPlane29/grin/pkg/storage/memory"
+	"github.com/SunkPlane29/grin/pkg/service/application"
+	"github.com/SunkPlane29/grin/pkg/service/storage/memory"
+	"github.com/SunkPlane29/grin/pkg/util"
 )
 
 var PORT = os.Getenv("PORT")
@@ -26,5 +27,8 @@ func main() {
 	})
 
 	grinAPI := application.New(grinStorage)
-	log.Fatal(http.ListenAndServe(fmt.Sprintf(":%s", PORT), application.LoggerMiddleware(application.RecoverMiddleware(grinAPI))))
+	log.Fatal(http.ListenAndServe(
+		fmt.Sprintf(":%s", PORT),
+		util.LoggerMiddleware("grin-api | ", util.RecoverMiddleware(grinAPI))),
+	)
 }

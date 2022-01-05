@@ -3,8 +3,9 @@ package application
 import (
 	"net/http"
 
-	"github.com/SunkPlane29/grin/pkg/post"
-	"github.com/SunkPlane29/grin/pkg/user"
+	"github.com/SunkPlane29/grin/pkg/service/post"
+	"github.com/SunkPlane29/grin/pkg/service/user"
+	"github.com/SunkPlane29/grin/pkg/util"
 	"github.com/gorilla/mux"
 )
 
@@ -62,14 +63,14 @@ func (g *GrinAPI) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (g *GrinAPI) HandleRoutes() {
-	g.r.HandleFunc(CreateUserEndpoint, CORSMiddleware(g.postMethodPreflightHandler)).Methods("OPTIONS")
-	g.r.HandleFunc(CreateUserEndpoint, CORSMiddleware(Auth0Middleware(DOMAIN, g.CreateUserHandler))).Methods("POST")
-	g.r.HandleFunc(CheckUserExistsEndpoint, CORSMiddleware(g.CheckUserExistsHandler)).Methods("GET")
+	g.r.HandleFunc(CreateUserEndpoint, util.CORSMiddleware(util.PostMethodPreflightHandler)).Methods("OPTIONS")
+	g.r.HandleFunc(CreateUserEndpoint, util.CORSMiddleware(g.CreateUserHandler)).Methods("POST")
+	g.r.HandleFunc(CheckUserExistsEndpoint, util.CORSMiddleware(g.CheckUserExistsHandler)).Methods("GET")
 
-	g.r.HandleFunc(CreateUserEndpoint, CORSMiddleware(g.postMethodPreflightHandler)).Methods("OPTIONS")
-	g.r.HandleFunc(CreatePostEndpoint, CORSMiddleware(Auth0Middleware(DOMAIN, g.CreatePostHandler))).Methods("POST")
-	g.r.HandleFunc(GetPostsEndpoint, CORSMiddleware(g.getMethodPreflightHandler)).Methods("OPTIONS")
-	g.r.HandleFunc(GetPostsEndpoint, CORSMiddleware(g.GetPostsHandler)).Methods("GET")
-	g.r.HandleFunc(GetPostsEndpoint, CORSMiddleware(g.getMethodPreflightHandler)).Methods("OPTIONS")
-	g.r.HandleFunc(GetPostEndpoint, CORSMiddleware(g.GetPostHandler)).Methods("GET")
+	g.r.HandleFunc(CreatePostEndpoint, util.CORSMiddleware(util.PostMethodPreflightHandler)).Methods("OPTIONS")
+	g.r.HandleFunc(CreatePostEndpoint, util.CORSMiddleware(StubAuthMiddleware(g.CreatePostHandler))).Methods("POST")
+	g.r.HandleFunc(GetPostsEndpoint, util.CORSMiddleware(util.GetMethodPreflightHandler)).Methods("OPTIONS")
+	g.r.HandleFunc(GetPostsEndpoint, util.CORSMiddleware(g.GetPostsHandler)).Methods("GET")
+	g.r.HandleFunc(GetPostsEndpoint, util.CORSMiddleware(util.GetMethodPreflightHandler)).Methods("OPTIONS")
+	g.r.HandleFunc(GetPostEndpoint, util.CORSMiddleware(g.GetPostHandler)).Methods("GET")
 }

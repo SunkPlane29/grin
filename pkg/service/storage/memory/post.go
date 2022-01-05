@@ -3,7 +3,7 @@ package memory
 import (
 	"errors"
 
-	"github.com/SunkPlane29/grin/pkg/post"
+	"github.com/SunkPlane29/grin/pkg/service/post"
 )
 
 type PostStorage struct {

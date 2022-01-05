@@ -1,10 +1,6 @@
 package post
 
-import (
-	"strconv"
-
-	"github.com/google/uuid"
-)
+import "github.com/segmentio/ksuid"
 
 type service struct {
 	store Storage
@@ -16,7 +12,7 @@ func New(s Storage) Service {
 
 func (s *service) CreatePost(creatorID string, post Post) (*Post, error) {
 	post.CreatorID = creatorID
-	post.ID = strconv.Itoa(int(uuid.New().ID()))
+	post.ID = ksuid.New().String()
 
 	return s.store.CreatePost(creatorID, post)
 }

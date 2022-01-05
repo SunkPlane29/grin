@@ -1,17 +1,15 @@
-package application
+package util
 
-import (
-	"net/http"
-)
+import "net/http"
 
-func (g *GrinAPI) postMethodPreflightHandler(w http.ResponseWriter, r *http.Request) {
+func PostMethodPreflightHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "authorization,content-type")
 	w.Header().Set("Access-Control-Allow-Methods", "POST")
 
 	w.WriteHeader(http.StatusOK)
 }
 
-func (g *GrinAPI) getMethodPreflightHandler(w http.ResponseWriter, r *http.Request) {
+func GetMethodPreflightHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Headers", "content-type")
 	w.Header().Set("Access-Control-Allow-Methods", "GET")
 

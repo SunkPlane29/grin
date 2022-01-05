@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/SunkPlane29/grin/pkg/post"
+	"github.com/SunkPlane29/grin/pkg/service/post"
 	"github.com/gorilla/mux"
 )
 

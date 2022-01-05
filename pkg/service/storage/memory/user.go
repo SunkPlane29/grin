@@ -3,7 +3,7 @@ package memory
 import (
 	"errors"
 
-	"github.com/SunkPlane29/grin/pkg/user"
+	"github.com/SunkPlane29/grin/pkg/service/user"
 )
 
 //TODO: implement user storage for CreateUser
@@ -15,8 +15,8 @@ func NewUserStorage() user.Storage {
 	return &UserStorage{users: make(map[string]*user.User)}
 }
 
-func (us *UserStorage) CreateUser(userID string, user user.User) (*user.User, error) {
-	us.users[userID] = &user
+func (us *UserStorage) CreateUser(user user.User) (*user.User, error) {
+	us.users[user.ID] = &user
 	return &user, nil
 }
 
