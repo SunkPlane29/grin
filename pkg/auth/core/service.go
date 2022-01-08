@@ -1,7 +1,6 @@
 package core
 
 import (
-	"io/ioutil"
 	"time"
 
 	"github.com/SunkPlane29/grin/pkg/auth/token"
@@ -9,44 +8,22 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Keys struct {
-	pubKey     []byte
-	privateKey []byte
-}
-
-func NewKeysFromCertFiles(pubKeyFName, privateKeyFName string) (*Keys, error) {
-	pubKey, err := ioutil.ReadFile(pubKeyFName)
-	if err != nil {
-		return nil, err
-	}
-
-	privateKey, err := ioutil.ReadFile(privateKeyFName)
-	if err != nil {
-		return nil, err
-	}
-
-	return &Keys{
-		pubKey:     pubKey,
-		privateKey: privateKey,
-	}, nil
-}
-
 type service struct {
 	tokenIssuer token.JWT
 	storage     AuthenticationStorage
 }
 
-func NewAuthorizationService(s AuthenticationStorage, keys *Keys) AuthorizationService {
+func NewAuthorizationService(s AuthenticationStorage, keys *token.Keys) AuthorizationService {
 	return &service{
-		tokenIssuer: token.NewJWT(keys.pubKey, keys.privateKey),
+		tokenIssuer: token.NewJWT(keys.PubKey, keys.PrivateKey),
 		storage:     s,
 	}
 }
 
-func (s *service) CreateUser(username string, password []byte) (string, string, error) {
+func (s *service) CreateUser(username string, password []byte) error {
 	pwHash, err := hashPw(password)
 	if err != nil {
-		return "", "", err
+		return err
 	}
 
 	user := &User{
@@ -56,10 +33,10 @@ func (s *service) CreateUser(username string, password []byte) (string, string, 
 	}
 
 	if err := s.storage.StoreUser(user); err != nil {
-		return "", "", err
+		return err
 	}
 
-	return s.generateTokens(user.ID)
+	return nil
 }
 
 func hashPw(pw []byte) ([]byte, error) {

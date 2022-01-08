@@ -6,7 +6,7 @@ type AuthenticationStorage interface {
 }
 
 type AuthorizationService interface {
-	CreateUser(username string, password []byte) (accessToken, refreshToken string, err error)
+	CreateUser(username string, password []byte) error
 	AuthenticateUser(username string, password []byte) (accessToken, refreshToken string, err error)
 	RefreshToken(token string) (accessToken, refreshToken string, err error)
 }

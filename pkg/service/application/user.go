@@ -5,22 +5,36 @@ import (
 	"net/http"
 
 	"github.com/SunkPlane29/grin/pkg/service/user"
+	"github.com/SunkPlane29/grin/pkg/util"
 )
 
 func (g *GrinAPI) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(util.IDK).(string) //util.idontknow?
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("no access token")) //TODO: repeated code here, make variable
+		return
+	}
+
 	defer r.Body.Close()
 
 	var userObj user.User
 	if err := json.NewDecoder(r.Body).Decode(&userObj); err != nil {
-		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
-	createdUser, err := g.userService.CreateUser(userObj)
+	if userObj.Alias == "" || userObj.Username == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("empty request body"))
+		return
+	}
+
+	createdUser, err := g.userService.CreateUser(userID, userObj)
 	if err != nil {
-		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 		return
 	}
 

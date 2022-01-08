@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/SunkPlane29/grin/pkg/auth/token"
 	"github.com/SunkPlane29/grin/pkg/service/application"
 	"github.com/SunkPlane29/grin/pkg/service/storage/memory"
 	"github.com/SunkPlane29/grin/pkg/util"
@@ -26,7 +27,12 @@ func main() {
 		PostStorage: postStorage,
 	})
 
-	grinAPI := application.New(grinStorage)
+	keys, err := token.NewKeysFromCertFiles("cert/id_rsa.pub", "cert/id_rsa")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	grinAPI := application.New(grinStorage, token.NewJWT(keys.PubKey, keys.PrivateKey))
 	log.Fatal(http.ListenAndServe(
 		fmt.Sprintf(":%s", PORT),
 		util.LoggerMiddleware("grin-api | ", util.RecoverMiddleware(grinAPI))),

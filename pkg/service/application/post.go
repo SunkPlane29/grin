@@ -5,14 +5,15 @@ import (
 	"net/http"
 
 	"github.com/SunkPlane29/grin/pkg/service/post"
+	"github.com/SunkPlane29/grin/pkg/util"
 	"github.com/gorilla/mux"
 )
 
 func (g *GrinAPI) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
-	userID, ok := r.Context().Value(UIDK).(string)
+	userID, ok := r.Context().Value(util.IDK).(string)
 	if !ok {
-		w.Write([]byte("no access token")) //TODO: repeated code here, make variable
 		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("no access token")) //TODO: repeated code here, make variable
 		return
 	}
 
@@ -20,8 +21,8 @@ func (g *GrinAPI) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	var postObj post.Post
 	if err := json.NewDecoder(r.Body).Decode(&postObj); err != nil {
-		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
@@ -29,8 +30,8 @@ func (g *GrinAPI) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	createdPost, err := g.postService.CreatePost(userID, postObj)
 	if err != nil {
-		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
@@ -42,15 +43,15 @@ func (g *GrinAPI) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 func (g *GrinAPI) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
 	if v["creator-id"] == "" {
-		w.Write([]byte("no userID given"))
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("no userID given"))
 		return
 	}
 
 	posts, err := g.postService.GetPosts(v["creator-id"])
 	if err != nil {
-		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
 		return
 	}
 
@@ -62,12 +63,12 @@ func (g *GrinAPI) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 func (g *GrinAPI) GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	v := mux.Vars(r)
 	if v["creator-id"] == "" {
-		w.Write([]byte("no userID given"))
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("no userID given"))
 		return
 	} else if v["post-id"] == "" {
-		w.Write([]byte("no postID given"))
 		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte("no postID given"))
 		return
 	}
 
@@ -81,4 +82,24 @@ func (g *GrinAPI) GetPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(post)
+}
+
+func (g *GrinAPI) GetPostsSubscribedHandler(w http.ResponseWriter, r *http.Request) {
+	userID, ok := r.Context().Value(util.IDK).(string)
+	if !ok {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("no access token")) //TODO: repeated code here, make variable
+		return
+	}
+
+	posts, err := g.postService.GetPosts(userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte(err.Error()))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(posts)
 }

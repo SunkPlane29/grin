@@ -3,10 +3,33 @@ package token
 import (
 	"errors"
 	"fmt"
+	"io/ioutil"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 )
+
+type Keys struct {
+	PubKey     []byte
+	PrivateKey []byte
+}
+
+func NewKeysFromCertFiles(pubKeyFName, privateKeyFName string) (*Keys, error) {
+	pubKey, err := ioutil.ReadFile(pubKeyFName)
+	if err != nil {
+		return nil, err
+	}
+
+	privateKey, err := ioutil.ReadFile(privateKeyFName)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Keys{
+		PubKey:     pubKey,
+		PrivateKey: privateKey,
+	}, nil
+}
 
 type JWT struct {
 	pubKey     []byte

@@ -1,11 +1,54 @@
 package util
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 	"time"
+
+	"github.com/SunkPlane29/grin/pkg/auth/token"
 )
+
+type ContextKey string
+
+var IDK ContextKey = "user-id"
+
+func AuthMiddleware(tokenIssuer token.JWT, f http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		auth := r.Header.Get("Authorization")
+		if auth == "" {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("missing authorization header"))
+			return
+		}
+
+		token := strings.Split(auth, " ")
+		if token[0] != "Bearer" {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("wrong authentication token type, required: Bearer"))
+			return
+		}
+
+		if len(token) != 2 {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("invalid authorization token"))
+			return
+		}
+
+		id, err := tokenIssuer.Validate(token[1])
+		if err != nil {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte("invalid token signature"))
+			return
+		}
+
+		ctx := context.WithValue(r.Context(), IDK, id)
+
+		f(w, r.WithContext(ctx))
+	}
+}
 
 func CORSMiddleware(f http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

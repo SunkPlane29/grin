@@ -9,7 +9,7 @@ type Storage interface {
 }
 
 type Service interface {
-	CreateUser(user User) (*User, error)
+	CreateUser(userID string, user User) (*User, error)
 	CheckUserExists(userID string) bool
 	UpdateUsername(userID, newUsername string) error
 	UpdateAlias(userID, newAlias string) error

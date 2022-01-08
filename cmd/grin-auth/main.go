@@ -9,6 +9,7 @@ import (
 	"github.com/SunkPlane29/grin/pkg/auth/application"
 	"github.com/SunkPlane29/grin/pkg/auth/core"
 	"github.com/SunkPlane29/grin/pkg/auth/storage/memory"
+	"github.com/SunkPlane29/grin/pkg/auth/token"
 	"github.com/SunkPlane29/grin/pkg/util"
 )
 
@@ -20,7 +21,7 @@ func main() {
 
 	s := memory.NewAuthorizationStorage()
 
-	keys, err := core.NewKeysFromCertFiles("cert/id_rsa.pub", "cert/id_rsa")
+	keys, err := token.NewKeysFromCertFiles("cert/id_rsa.pub", "cert/id_rsa")
 	if err != nil {
 		log.Fatal(err)
 	}

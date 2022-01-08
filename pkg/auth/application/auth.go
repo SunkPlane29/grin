@@ -12,8 +12,8 @@ type UserData struct {
 }
 
 type TokenResponse struct {
-	AccessToken  string `json:"access-token"`
-	RefreshToken string `json:"refresh-token"`
+	AccessToken  string `json:"access_token"`
+	RefreshToken string `json:"refresh_token"`
 }
 
 func (as *AuthServer) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
@@ -26,18 +26,14 @@ func (as *AuthServer) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	accessToken, refreshToken, err := as.AuthService.CreateUser(userData.Username, []byte(userData.Password)) //there is no encryption, this should rely on https hehe
+	err := as.AuthService.CreateUser(userData.Username, []byte(userData.Password)) //there is no encryption, this should rely on https hehe
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
 		return
 	}
 
-	resp := TokenResponse{AccessToken: accessToken, RefreshToken: refreshToken}
-
-	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(resp)
 }
 
 func (as *AuthServer) AuthenticateUserHandler(w http.ResponseWriter, r *http.Request) {
