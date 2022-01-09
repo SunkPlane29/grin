@@ -28,7 +28,7 @@ func (g *GrinAPI) CreatePostHandler(w http.ResponseWriter, r *http.Request) {
 
 	postObj.CreatorID = userID
 
-	createdPost, err := g.postService.CreatePost(userID, postObj)
+	createdPost, err := g.postService.CreatePost(r.Context(), userID, postObj)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
@@ -48,7 +48,7 @@ func (g *GrinAPI) GetPostsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, err := g.postService.GetPosts(v["creator-id"])
+	posts, err := g.postService.GetPosts(r.Context(), v["creator-id"])
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
@@ -72,7 +72,7 @@ func (g *GrinAPI) GetPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := g.postService.GetPost(v["creator-id"], v["post-id"])
+	post, err := g.postService.GetPost(r.Context(), v["creator-id"], v["post-id"])
 	if err != nil {
 		w.Write([]byte(err.Error()))
 		w.WriteHeader(http.StatusInternalServerError)
@@ -92,7 +92,7 @@ func (g *GrinAPI) GetPostsSubscribedHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	posts, err := g.postService.GetPosts(userID)
+	posts, err := g.postService.GetPosts(r.Context(), userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))

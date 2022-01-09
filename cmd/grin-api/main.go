@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -8,7 +9,7 @@ import (
 
 	"github.com/SunkPlane29/grin/pkg/auth/token"
 	"github.com/SunkPlane29/grin/pkg/service/application"
-	"github.com/SunkPlane29/grin/pkg/service/storage/memory"
+	"github.com/SunkPlane29/grin/pkg/service/storage/sqlite"
 	"github.com/SunkPlane29/grin/pkg/util"
 )
 
@@ -20,11 +21,14 @@ func main() {
 	}
 	log.Printf("Listening on :%s", PORT)
 
-	userStorage := memory.NewUserStorage()
-	postStorage := memory.NewPostStorage()
+	sqliteStorage, err := sqlite.NewScratch(context.Background(), "./grin.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	grinStorage := application.NewGrinStorage(application.StorageOptions{
-		UserStorage: userStorage,
-		PostStorage: postStorage,
+		UserStorage: sqliteStorage,
+		PostStorage: sqliteStorage,
 	})
 
 	keys, err := token.NewKeysFromCertFiles("cert/id_rsa.pub", "cert/id_rsa")

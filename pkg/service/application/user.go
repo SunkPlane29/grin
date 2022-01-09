@@ -31,7 +31,7 @@ func (g *GrinAPI) CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	createdUser, err := g.userService.CreateUser(userID, userObj)
+	createdUser, err := g.userService.CreateUser(r.Context(), userID, userObj)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
@@ -50,7 +50,7 @@ func (g *GrinAPI) CheckUserExistsHandler(w http.ResponseWriter, r *http.Request)
 		w.Write([]byte("missing id in request url params"))
 	}
 
-	if g.userService.CheckUserExists(id) {
+	if g.userService.CheckUserExists(r.Context(), id) {
 		w.WriteHeader(http.StatusFound)
 		return
 	} else {
