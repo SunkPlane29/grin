@@ -1,32 +1,33 @@
 package memory
 
 import (
+	"context"
 	"errors"
 
 	"github.com/SunkPlane29/grin/pkg/auth/core"
 )
 
 type AuthenticationStorage struct {
-	users map[string]*core.User
+	users map[string]core.User
 }
 
 func NewAuthorizationStorage() core.AuthenticationStorage {
 	return &AuthenticationStorage{
-		users: make(map[string]*core.User),
+		users: make(map[string]core.User),
 	}
 }
 
-func (as *AuthenticationStorage) StoreUser(user *core.User) error {
+func (as *AuthenticationStorage) StoreUser(ctx context.Context, user core.User) error {
 	as.users[user.Username] = user
 
 	return nil
 }
 
-func (as *AuthenticationStorage) GetUser(username string) (*core.User, error) {
+func (as *AuthenticationStorage) GetUser(ctx context.Context, username string) (*core.User, error) {
 	user, ok := as.users[username]
 	if !ok {
 		return nil, errors.New("user not found")
 	}
 
-	return user, nil
+	return &user, nil
 }

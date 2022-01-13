@@ -1,12 +1,14 @@
 package core
 
+import "context"
+
 type AuthenticationStorage interface {
-	StoreUser(*User) error
-	GetUser(string) (*User, error)
+	StoreUser(ctx context.Context, user User) error
+	GetUser(ctx context.Context, id string) (*User, error)
 }
 
 type AuthorizationService interface {
-	CreateUser(username string, password []byte) error
-	AuthenticateUser(username string, password []byte) (accessToken, refreshToken string, err error)
+	CreateUser(ctx context.Context, username string, password []byte) error
+	AuthenticateUser(ctx context.Context, username string, password []byte) (accessToken, refreshToken string, err error)
 	RefreshToken(token string) (accessToken, refreshToken string, err error)
 }

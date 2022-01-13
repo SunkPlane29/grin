@@ -18,10 +18,6 @@ func (s *Storage) Close() {
 	s.db.Close()
 }
 
-func New(filepath string) (*Storage, error) {
-	return Open(filepath)
-}
-
 func Open(filepath string) (*Storage, error) {
 	db, err := sql.Open("sqlite3", filepath)
 	if err != nil {
@@ -31,6 +27,10 @@ func Open(filepath string) (*Storage, error) {
 	return &Storage{
 		db: db,
 	}, nil
+}
+
+func New(filepath string) (*Storage, error) {
+	return Open(filepath)
 }
 
 func NewScratch(ctx context.Context, filepath string) (*Storage, error) {
@@ -57,18 +57,9 @@ func (s *Storage) PrepareDB(ctx context.Context) error {
 	const createUsersTable = `
 	CREATE TABLE users (
 		ID TEXT PRIMARY KEY,
-		username TEXT,		
-		alias TEXT
+		username TEXT,
+		password BLOB
 	)
-	`
-
-	const createPostsTable = `
-	CREATE TABLE posts (
-		ID TEXT PRIMARY KEY,
-		creatorID TEXT,
-		content TEXT,
-		FOREIGN KEY(creatorID) REFERENCES users(ID)
-	)	
 	`
 
 	tx, err := s.db.BeginTx(ctx, nil)
@@ -77,10 +68,6 @@ func (s *Storage) PrepareDB(ctx context.Context) error {
 	}
 
 	if _, err := tx.ExecContext(ctx, createUsersTable); err != nil {
-		return err
-	}
-
-	if _, err := tx.ExecContext(ctx, createPostsTable); err != nil {
 		return err
 	}
 

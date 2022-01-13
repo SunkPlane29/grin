@@ -1,6 +1,7 @@
 package core
 
 import (
+	"context"
 	"time"
 
 	"github.com/SunkPlane29/grin/pkg/auth/token"
@@ -20,19 +21,19 @@ func NewAuthorizationService(s AuthenticationStorage, keys *token.Keys) Authoriz
 	}
 }
 
-func (s *service) CreateUser(username string, password []byte) error {
+func (s *service) CreateUser(ctx context.Context, username string, password []byte) error {
 	pwHash, err := hashPw(password)
 	if err != nil {
 		return err
 	}
 
-	user := &User{
+	user := User{
 		ID:           ksuid.New().String(),
 		Username:     username,
 		PasswordHash: pwHash,
 	}
 
-	if err := s.storage.StoreUser(user); err != nil {
+	if err := s.storage.StoreUser(ctx, user); err != nil {
 		return err
 	}
 
@@ -49,8 +50,8 @@ func hashPw(pw []byte) ([]byte, error) {
 }
 
 //TODO: return jwt token and refresh token and then create appication part
-func (s *service) AuthenticateUser(username string, password []byte) (string, string, error) {
-	user, err := s.storage.GetUser(username)
+func (s *service) AuthenticateUser(ctx context.Context, username string, password []byte) (string, string, error) {
+	user, err := s.storage.GetUser(ctx, username)
 	if err != nil {
 		return "", "", err
 	}

@@ -10,3 +10,7 @@ cert:
 .PHONY: run-auth
 run-auth:
 	go run ./cmd/grin-auth
+
+.PHONY: test
+test:
+	GOFLAGS="-count=1" go test -v ./...	

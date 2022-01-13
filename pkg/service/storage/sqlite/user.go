@@ -24,7 +24,7 @@ func (s *Storage) CreateUser(ctx context.Context, user user.User) (*user.User, e
 		return nil, err
 	}
 
-	if _, err := tx.Exec(insertUser, user.ID, user.Username, user.Alias); err != nil {
+	if _, err := tx.ExecContext(ctx, insertUser, user.ID, user.Username, user.Alias); err != nil {
 		return nil, err
 	}
 
@@ -36,7 +36,7 @@ func (s *Storage) CreateUser(ctx context.Context, user user.User) (*user.User, e
 }
 
 func (s *Storage) GetUser(ctx context.Context, userID string) (*user.User, error) {
-	const selectUser = `
+	const getUser = `
 	SELECT *
 	FROM users
 	WHERE id=?  
@@ -50,10 +50,10 @@ func (s *Storage) GetUser(ctx context.Context, userID string) (*user.User, error
 		return nil, err
 	}
 
-	result := tx.QueryRowContext(ctx, selectUser, userID)
+	result := tx.QueryRowContext(ctx, getUser, userID)
 
 	var dbUser user.User
-	if err := result.Scan(&dbUser); err != nil {
+	if err := result.Scan(&dbUser.ID, &dbUser.Username, &dbUser.Alias); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, user.ErrUserNotFound
 		}

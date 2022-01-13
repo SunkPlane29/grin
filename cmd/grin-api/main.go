@@ -25,10 +25,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer sqliteStorage.Close()
+
+	// userStorage := memory.NewUserStorage()
+	// postStorage := memory.NewPostStorage()
 
 	grinStorage := application.NewGrinStorage(application.StorageOptions{
 		UserStorage: sqliteStorage,
 		PostStorage: sqliteStorage,
+		// UserStorage: userStorage,
+		// PostStorage: postStorage,
 	})
 
 	keys, err := token.NewKeysFromCertFiles("cert/id_rsa.pub", "cert/id_rsa")

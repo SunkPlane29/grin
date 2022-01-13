@@ -26,7 +26,7 @@ func (as *AuthServer) CreateUserHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	err := as.AuthService.CreateUser(userData.Username, []byte(userData.Password)) //there is no encryption, this should rely on https hehe
+	err := as.AuthService.CreateUser(r.Context(), userData.Username, []byte(userData.Password)) //there is no encryption, this should rely on https hehe
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		w.Write([]byte(err.Error()))
@@ -46,7 +46,7 @@ func (as *AuthServer) AuthenticateUserHandler(w http.ResponseWriter, r *http.Req
 		return
 	}
 
-	accessToken, refreshToken, err := as.AuthService.AuthenticateUser(userData.Username, []byte(userData.Password))
+	accessToken, refreshToken, err := as.AuthService.AuthenticateUser(r.Context(), userData.Username, []byte(userData.Password))
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		w.Write([]byte(err.Error()))

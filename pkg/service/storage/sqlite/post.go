@@ -9,7 +9,7 @@ import (
 	"github.com/SunkPlane29/grin/pkg/service/post"
 )
 
-//TODO: implement all
+//TODO: test em all
 
 func (s *Storage) CreatePost(ctx context.Context, p post.Post) (*post.Post, error) {
 	const createPost = `
@@ -58,12 +58,18 @@ func (s *Storage) GetPosts(ctx context.Context, creatorID string) (*[]post.Post,
 	defer result.Close()
 
 	var posts = []post.Post{}
-	if err := result.Scan(&posts); err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return nil, post.ErrNoPosts
+	for result.Next() {
+		var p post.Post
+
+		if err := result.Scan(&p.ID, &p.CreatorID, &p.Content); err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				return nil, post.ErrNoPosts
+			}
+
+			return nil, err
 		}
 
-		return nil, err
+		posts = append(posts, p)
 	}
 
 	if err := tx.Commit(); err != nil {
@@ -91,7 +97,7 @@ func (s *Storage) GetPost(ctx context.Context, creatorID string, postID string) 
 	result := tx.QueryRowContext(ctx, getPost, postID, creatorID)
 
 	var dbPost post.Post
-	if err := result.Scan(&dbPost); err != nil {
+	if err := result.Scan(&dbPost.ID, &dbPost.CreatorID, &dbPost.Content); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, post.ErrNoPosts
 		}
